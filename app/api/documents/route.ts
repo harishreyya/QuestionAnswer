@@ -3,9 +3,20 @@ import { connectDB } from "@/lib/db";
 import Document from "@/models/Document";
 
 export async function GET() {
-  await connectDB();
+  try {
+    await connectDB();
 
-  const docs = await Document.find().sort({ createdAt: -1 });
+    const docs = await Document.find()
+      .sort({ createdAt: -1 });
 
-  return NextResponse.json(docs);
+    return NextResponse.json(docs);
+
+  } catch (error) {
+    console.error("Fetch documents error:", error);
+
+    return NextResponse.json(
+      { error: "Failed to fetch documents." },
+      { status: 500 }
+    );
+  }
 }
