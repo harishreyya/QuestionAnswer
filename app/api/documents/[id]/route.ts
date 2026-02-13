@@ -48,3 +48,46 @@ export async function GET(
     );
   }
 }
+
+export async function DELETE(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    await connectDB();
+
+    const { id } = await context.params;
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Document ID is required." },
+        { status: 400 }
+      );
+    }
+
+    const document = await Document.findById(id);
+
+    if (!document) {
+      return NextResponse.json(
+        { error: "Document not found." },
+        { status: 404 }
+      );
+    }
+
+    await Chunk.deleteMany({ documentId: id });
+    await Document.findByIdAndDelete(id);
+
+    return NextResponse.json(
+      { success: true },
+      { status: 200 }
+    );
+
+  } catch (error) {
+    console.error("Delete document error:", error);
+
+    return NextResponse.json(
+      { error: "Failed to delete document." },
+      { status: 500 }
+    );
+  }
+}

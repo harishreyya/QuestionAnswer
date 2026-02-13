@@ -1,9 +1,11 @@
+
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Document from "@/models/Document";
 import Chunk from "@/models/Chunk";
 import { splitIntoChunks } from "@/lib/chunk";
 import { openai } from "@/lib/openai";
+import { generateUniqueName } from "@/lib/generateUniqueName";
 
 export async function POST(req: Request) {
   try {
@@ -19,22 +21,24 @@ export async function POST(req: Request) {
       );
     }
 
-    const name = body?.name;
+    const rawName = body?.name?.trim();
     const content = body?.content;
 
-    if (!content || typeof content !== "string") {
+    if (!content || typeof content !== "string" || !content.trim()) {
       return NextResponse.json(
         { error: "Document content is required." },
         { status: 400 }
       );
     }
 
-    if (!name || typeof name !== "string") {
-      return NextResponse.json(
-        { error: "Document name is required." },
-        { status: 400 }
-      );
+    let baseName = rawName;
+
+    if (!baseName) {
+      const count = await Document.countDocuments();
+      baseName = `Document ${count + 1}`;
     }
+
+    const uniqueName = await generateUniqueName(baseName);
 
     const chunks = splitIntoChunks(content);
 
@@ -45,7 +49,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const doc = await Document.create({ name });
+    const doc = await Document.create({ name: uniqueName });
 
     for (const chunk of chunks) {
       if (!chunk || !chunk.trim()) continue;
@@ -59,6 +63,7 @@ export async function POST(req: Request) {
         });
       } catch (error) {
         console.error("Embedding error:", error);
+
         await Chunk.deleteMany({ documentId: doc._id });
         await Document.findByIdAndDelete(doc._id);
 
@@ -88,7 +93,13 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json(
-      { success: true, documentId: doc._id },
+      {
+        success: true,
+        document: {
+          _id: doc._id,
+          name: uniqueName,
+        },
+      },
       { status: 201 }
     );
 
