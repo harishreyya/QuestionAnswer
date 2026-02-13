@@ -190,7 +190,7 @@ const answerRef = useRef<HTMLDivElement | null>(null);
         <button
           onClick={uploadFromText}
           disabled={uploadingText}
-          className="px-8 py-3 rounded-2xl bg-gradient-to-r from-black to-gray-800 text-white text-sm font-medium shadow-lg hover:shadow-xl transition disabled:opacity-50"
+          className="px-8 py-3 rounded-2xl bg-gradient-to-r from-black to-gray-800 text-white text-sm font-medium shadow-lg hover:shadow-xl transition disabled:opacity-50 hover:cusor-pointer"
         >
           {uploadingText ? "Uploading..." : "Upload Text"}
         </button>
@@ -237,7 +237,7 @@ const answerRef = useRef<HTMLDivElement | null>(null);
         <button
           onClick={ask}
           disabled={asking}
-          className="px-8 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium shadow-lg hover:shadow-xl transition disabled:opacity-50"
+          className="px-8 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium shadow-lg hover:shadow-xl transition disabled:opacity-50 hover:cusor-pointer"
         >
           {asking ? "Generating Answer..." : "Get Answer"}
         </button>
