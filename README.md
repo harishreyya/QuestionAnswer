@@ -116,7 +116,7 @@ Each document is split into multiple chunks for semantic search efficiency.
 ### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/private-knowledge-workspace.git
+git clone https://github.com/harishreyya/QuestionAnswer.git
 cd private-knowledge-workspace
 ```
 
